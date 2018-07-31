@@ -6,15 +6,25 @@ class WeatherApp extends React.Component {
   constructor(props) {
     super(props);
 
-    var $this = this;
-    navigator.geolocation.getCurrentPosition(
-      function(res_location) {
-        console.log('getCurrentPosition completed with:');
-        console.log(res_location);
-        $this.setState({loc: res_location, loaded: true});
-      }, this.geoError);
-
     this.state = {loc: null, loaded: false};
+
+    this.location_loaded = this.location_loaded.bind(this);
+    this.location_error = this.location_error.bind(this);
+  }
+
+  componentDidMount() {
+    navigator.geolocation.getCurrentPosition(this.location_loaded, this.location_error);
+
+  }
+
+  location_loaded(res_location) {
+    console.log('getCurrentPosition completed with:');
+    console.log(res_location);
+    this.setState({loc: res_location, loaded: true});
+  }
+
+  location_error() {
+    console.log('There was an error loading your location');
   }
 
   geoError() {
