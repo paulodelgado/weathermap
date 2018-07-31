@@ -125,7 +125,7 @@ class WeatherAppMap extends React.Component {
         <Marker position={{ lat: this.props.loc.coords.latitude, lng: this.props.loc.coords.longitude }} />
         <MarkerWithLabel
           position={{ lat: this.props.loc.coords.latitude, lng: this.props.loc.coords.longitude }}
-          labelAnchor={{x: 0, y: 130}}
+          labelAnchor={{x: -20, y: 130}}
           labelStyle={{backgroundColor: "lightblue", fontSize: "14px", padding: "16px", borderRadius: "5px"}}
         >
           <div>
