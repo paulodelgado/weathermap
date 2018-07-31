@@ -1,0 +1,33 @@
+body {
+
+}
+
+.weatherapp-search {
+  display: block;
+  padding: 10px;
+  border: 1px solid lightgray;
+  border-radius: 3px;
+  margin-bottom: 10px;
+}
+.weatherapp-bottom  {
+  display: block;
+  padding: 10px;
+  border: 1px solid lightgray;
+  border-radius: 3px;
+}
+
+.weatherapp-map {
+  display: inline-block;
+  margin: 1%;
+  padding: 0;
+  width: 48%;
+}
+
+.weatherapp-history  {
+
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  width: 48%;
+
+}
