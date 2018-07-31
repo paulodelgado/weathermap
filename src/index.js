@@ -121,7 +121,7 @@ class WeatherAppMap extends React.Component {
       defaultZoom={10}
       defaultCenter={{ lat: this.props.loc.coords.latitude, lng: this.props.loc.coords.longitude }}
       >
-        <Marker position={{ lat: this.props.loc.coords.latitude, lng: this.props.loc.coords.longitude }} />}
+        <Marker position={{ lat: this.props.loc.coords.latitude, lng: this.props.loc.coords.longitude }} />
       </GoogleMap>
     )
 
@@ -129,7 +129,7 @@ class WeatherAppMap extends React.Component {
     return (
       <div className="map-container">
         <MyMapComponent
-          containerElement={<div style={{ height: `400px` }} />}
+          containerElement={<div style={{ position: `absolute`, width: `100%`, height: `100%` }} />}
           mapElement={<div style={{ height: `100%` }} />}
         />
       </div>
