@@ -6,17 +6,15 @@ class WeatherApp extends React.Component {
   constructor(props) {
     super(props);
 
-    navigator.geolocation.getCurrentPosition(this.updateLocation, this.geoError);
+    var $this = this;
+    navigator.geolocation.getCurrentPosition(
+      function(res_location) {
+        console.log('getCurrentPosition completed with:');
+        console.log(res_location);
+        $this.setState({loc: res_location, loaded: true});
+      }, this.geoError);
 
-    this.updateLocation = this.updateLocation.bind(this);
-    this.state = {loc: null};
-  }
-
-  updateLocation(res_location) {
-    debugger
-    console.log('updateLocation!');
-    console.log(res_location)
-    this.setState({loc: res_location});
+    this.state = {loc: null, loaded: false};
   }
 
   geoError() {
@@ -24,16 +22,25 @@ class WeatherApp extends React.Component {
   }
 
   render() {
+    const isLoaded = this.state.loaded;
+    let map_content;
+
+    if(isLoaded) {
+      map_content = <WeatherAppMap loc={this.state.loc} />;
+    } else {
+      map_content = "Waiting for location...";
+    }
+
     return (
       <div className="weatherapp">
         <div className="debug">
-          Latitude: {this.state.loc === undefined && this.state.loc.coords.latitude}
+          Latitude: {this.state.loaded ? this.state.loc.coords.latitude : "Loading..." }
           <br/>
-          Longitude: {this.state.loc === undefined && this.state.loc.coords.longitude}
+          Longitude: {this.state.loaded ? this.state.loc.coords.longitude : "Loading..."}
         </div>
         <div className="weatherapp-bottom">
           <div className="weatherapp-map">
-            <WeatherAppMap loc={this.state.loc} />
+            {map_content}
           </div>
           <div className="weatherapp-history">
             <WeatherAppHistory />
@@ -46,7 +53,8 @@ class WeatherApp extends React.Component {
 
 class WeatherAppMap extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
+    this.state = {isLoaded: false, weatherData: null};
   }
 
   componentDidMount () {
@@ -58,8 +66,11 @@ class WeatherAppMap extends React.Component {
       .then(res => res.json())
       .then(
         (result) => {
+          console.log('got weather data');
+          console.log(result);
           this.setState({
-            isLoaded: true
+            isLoaded: true,
+            weatherData: result
           });
         },
         (error) => {
@@ -76,13 +87,13 @@ class WeatherAppMap extends React.Component {
     if(this.props.loc === null) {
       return "";
     }
-    return "http://api.openweathermap.org/data/2.5/weather?lat=" + this.props.loc.coords.latitude + "&lon=" + this.props.loc.coords.longitude;
+    return "http://api.openweathermap.org/data/2.5/weather?lat=" + this.props.loc.coords.latitude + "&lon=" + this.props.loc.coords.longitude + "&appid=" + this.api_key();
   }
 
   render() {
     return (
       <div className="map-container">
-      Hello
+      {this.state.isLoaded ? "Loaded!" : "Got location, fetching weather data..."}
       </div>
     );
   }
