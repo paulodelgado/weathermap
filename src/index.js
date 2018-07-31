@@ -78,7 +78,7 @@ class WeatherAppMap extends React.Component {
           console.log(result);
           var places_raw = localStorage.getItem('places');
           var places = {};
-          if(places_raw !== null) {
+          if(places_raw) {
             places = JSON.parse(places_raw);
           }
           places[result.id] = result;
@@ -115,19 +115,24 @@ class WeatherAppMap extends React.Component {
 }
 
 class WeatherAppHistory extends React.Component {
-  // constructor(props) {
-  //   super(props);
-  //   debugger
-  // }
   render() {
-    const elems = Object.keys(this.props.places).map(key =>
-          <WeatherLocation key={key} loc={this.props.places[key]} />
-    )
-    return (
-      <div>
-        { elems }
-      </div>
-    )
+
+    console.log(this.props.places);
+
+
+    if(this.props.places) {
+
+      const elems = Object.keys(this.props.places).map(key => <WeatherLocation key={key} loc={this.props.places[key]} /> ) ;
+      return (
+        <div>
+          { elems }
+        </div>
+      )
+    } else {
+      return (
+        <div>No places yet</div>
+      )
+    }
   };
 }
 
@@ -154,4 +159,3 @@ ReactDOM.render(
   <WeatherApp  />,
   document.getElementById('root')
 );
-
