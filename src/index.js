@@ -78,7 +78,7 @@ class WeatherAppMap extends React.Component {
           console.log(result);
           var places_raw = localStorage.getItem('places');
           var places = {};
-          if(places_raw === null) {
+          if(places_raw == null) {
             places_raw = "";
           } else {
             places = JSON.parse(places_raw);
