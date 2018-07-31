@@ -76,3 +76,14 @@ body * {
   display: inline-block;
   margin-right: 20px;
 }
+
+dt {
+  display: block;
+  float: left;
+}
+
+dd {
+  display: block;
+  margin-left: 120px;
+  margin-bottom: 10px;
+}

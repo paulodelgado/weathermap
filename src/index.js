@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import { withGoogleMap, GoogleMap, Marker } from "react-google-maps"
 
+const { MarkerWithLabel } = require("react-google-maps/lib/components/addons/MarkerWithLabel");
 
 
 
@@ -77,11 +78,11 @@ class WeatherApp extends React.Component {
   }
 
   render() {
-    const isLoaded = this.state.geo_loaded;
+    const isLoaded = this.state.weather_loaded;
     let map_content;
 
     if(isLoaded) {
-      map_content = <WeatherAppMap loc={this.state.loc} />;
+      map_content = <WeatherAppMap loc={this.state.loc} weather={this.state.weather} />;
     } else {
       map_content = "Waiting for location...";
     }
@@ -122,6 +123,22 @@ class WeatherAppMap extends React.Component {
       defaultCenter={{ lat: this.props.loc.coords.latitude, lng: this.props.loc.coords.longitude }}
       >
         <Marker position={{ lat: this.props.loc.coords.latitude, lng: this.props.loc.coords.longitude }} />
+        <MarkerWithLabel
+          position={{ lat: this.props.loc.coords.latitude, lng: this.props.loc.coords.longitude }}
+          labelAnchor={{x: 0, y: 130}}
+          labelStyle={{backgroundColor: "lightblue", fontSize: "14px", padding: "16px", borderRadius: "5px"}}
+        >
+          <div>
+            <h4>{this.props.weather.name}</h4>
+            <dl>
+              <dt>Temperature:</dt>
+              <dd>{toFahrenheit(this.props.weather.main.temp)}&deg;F</dd>
+              <dt>Humidity</dt>
+              <dd>{this.props.weather.main.humidity}%</dd>
+            </dl>
+          </div>
+        </MarkerWithLabel>
+        />
       </GoogleMap>
     )
 
@@ -161,14 +178,11 @@ class WeatherAppHistory extends React.Component {
 
 class WeatherLocation extends React.Component {
 
-  toFahrenheit(num) {
-   return Math.round(num * (9/5) - 459.67);
-  }
   render() {
     return (
       <div className="placeInfo">
         <h3>{this.props.loc.name}</h3>
-        <span className="temp">{this.toFahrenheit(this.props.loc.main.temp)} degrees</span>
+        <span className="temp">{toFahrenheit(this.props.loc.main.temp)}&deg;F</span>
         <span className="humidity">{this.props.loc.main.humidity}% humidity</span>
 
         
@@ -182,3 +196,7 @@ ReactDOM.render(
   <WeatherApp  />,
   document.getElementById('root')
 );
+
+function toFahrenheit(num) {
+ return Math.round(num * (9/5) - 459.67);
+}
