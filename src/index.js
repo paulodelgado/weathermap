@@ -1,12 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import { withGoogleMap, GoogleMap, Marker } from "react-google-maps"
+
+
+
 
 class WeatherApp extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {loc: null, loaded: false};
+
+    this.state = {loc: null, geo_loaded: false, weather_loaded: false, weather: null};
 
     this.location_loaded = this.location_loaded.bind(this);
     this.location_error = this.location_error.bind(this);
@@ -14,63 +19,24 @@ class WeatherApp extends React.Component {
 
   componentDidMount() {
     navigator.geolocation.getCurrentPosition(this.location_loaded, this.location_error);
-
   }
 
-  location_loaded(res_location) {
-    console.log('getCurrentPosition completed with:');
-    console.log(res_location);
-    this.setState({loc: res_location, loaded: true});
-  }
-
-  location_error() {
-    console.log('There was an error loading your location');
-  }
-
-  geoError() {
-    alert("Unable to fetch geolocation data");
-  }
-
-  render() {
-    const isLoaded = this.state.loaded;
-    let map_content;
-
-    if(isLoaded) {
-      map_content = <WeatherAppMap loc={this.state.loc} />;
+  getWeatherUrl() {
+    const api_key = "bd37b478e71e5926a36f792563875b5d";
+    if(this.state.loc) {
+      return "https://api.openweathermap.org/data/2.5/weather?lat=" + this.state.loc.coords.latitude + "&lon=" + this.state.loc.coords.longitude + "&appid=" + api_key;
     } else {
-      map_content = "Waiting for location...";
+      return false;
     }
-
-    return (
-      <div className="weatherapp">
-        <div className="debug">
-          Latitude: {this.state.loaded ? this.state.loc.coords.latitude : "Loading..." }
-          / 
-          Longitude: {this.state.loaded ? this.state.loc.coords.longitude : "Loading..."}
-        </div>
-        <div className="weatherapp-map">
-          {map_content}
-        </div>
-        <div className="weatherapp-history">
-          <WeatherAppHistory places={JSON.parse(localStorage.getItem("places")) } />
-        </div>
-      </div>
-    );
-  }
-}
-
-class WeatherAppMap extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {isLoaded: false, weatherData: null};
   }
 
-  componentDidMount () {
+  fetchWeatherData() {
     var url = this.getWeatherUrl();
-    if(url === "") {
+    console.log("weather url: " + url);
+    if(!url) {
       return;
     }
-    fetch(this.getWeatherUrl())
+    fetch(url)
       .then(res => res.json())
       .then(
         (result) => {
@@ -84,31 +50,88 @@ class WeatherAppMap extends React.Component {
           places[result.id] = result;
           localStorage.setItem("places", JSON.stringify(places))
           this.setState({
-            isLoaded: true,
-            weatherData: result
+            weather_loaded: true,
+            weather: result,
+            places
           });
         },
         (error) => {
           this.setState({isLoaded: true, error})
         });
-    console.log('weather app map component did mount');
   }
 
-  api_key () {
-    return "bd37b478e71e5926a36f792563875b5d";
+  location_loaded(res_location) {
+    console.log('getCurrentPosition completed with:');
+    console.log(res_location);
+    this.setState({loc: res_location, geo_loaded: true});
+
+    this.fetchWeatherData();
   }
 
-  getWeatherUrl() {
-    if(this.props.loc === null) {
-      return "";
-    }
-    return "https://api.openweathermap.org/data/2.5/weather?lat=" + this.props.loc.coords.latitude + "&lon=" + this.props.loc.coords.longitude + "&appid=" + this.api_key();
+  location_error() {
+    console.log('There was an error loading your location');
+  }
+
+  geoError() {
+    alert("Unable to fetch geolocation data");
   }
 
   render() {
+    const isLoaded = this.state.geo_loaded;
+    let map_content;
+
+    if(isLoaded) {
+      map_content = <WeatherAppMap loc={this.state.loc} />;
+    } else {
+      map_content = "Waiting for location...";
+    }
+
+    return (
+      <div className="weatherapp">
+        <div className="debug">
+          Latitude: {this.state.geo_loaded ? this.state.loc.coords.latitude : "Loading..." }
+          / 
+          Longitude: {this.state.geo_loaded ? this.state.loc.coords.longitude : "Loading..."}
+        </div>
+        <div className="weatherapp-map">
+          {map_content}
+        </div>
+        <div className="weatherapp-history">
+          <WeatherAppHistory places={this.state.places} />
+        </div>
+      </div>
+    );
+  }
+}
+
+class WeatherAppMap extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {isLoaded: false, weatherData: null};
+  }
+
+  componentDidMount () {
+    console.log('weather app map component did mount');
+  }
+
+  render() {
+
+    const MyMapComponent = withGoogleMap((props) =>
+      <GoogleMap
+      defaultZoom={10}
+      defaultCenter={{ lat: this.props.loc.coords.latitude, lng: this.props.loc.coords.longitude }}
+      >
+        <Marker position={{ lat: this.props.loc.coords.latitude, lng: this.props.loc.coords.longitude }} />}
+      </GoogleMap>
+    )
+
+
     return (
       <div className="map-container">
-      {this.state.isLoaded ? "Loaded!" : "Got location, fetching weather data..."}
+        <MyMapComponent
+          containerElement={<div style={{ height: `400px` }} />}
+          mapElement={<div style={{ height: `100%` }} />}
+        />
       </div>
     );
   }

@@ -2,12 +2,21 @@ body {
   font: 14px helvetica, arial, sans-serif;
   margin: 0;
   padding: 0;
+  overflow: hidden;
 
 }
 
 body * {
   margin: 0;
   padding: 0;
+}
+
+.root {
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  height: 100%;
+  width: 100%;
 }
 
 .weatherapp {
@@ -21,16 +30,26 @@ body * {
   right: 0;
   text-align: right;
   font-size: 10px;
+  z-index: 3;
 
 }
 
 .weatherapp-map {
   display: block;
   height: 50%;
-  min-height: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 50%;
 }
 
 .weatherapp-history  {
+  position: absolute;
+  top: 50%;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: block;
   height: 50%;
   background: lightblue;
