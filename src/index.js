@@ -35,16 +35,14 @@ class WeatherApp extends React.Component {
       <div className="weatherapp">
         <div className="debug">
           Latitude: {this.state.loaded ? this.state.loc.coords.latitude : "Loading..." }
-          <br/>
+          / 
           Longitude: {this.state.loaded ? this.state.loc.coords.longitude : "Loading..."}
         </div>
-        <div className="weatherapp-bottom">
-          <div className="weatherapp-map">
-            {map_content}
-          </div>
-          <div className="weatherapp-history">
-            <WeatherAppHistory />
-          </div>
+        <div className="weatherapp-map">
+          {map_content}
+        </div>
+        <div className="weatherapp-history">
+          <WeatherAppHistory places={JSON.parse(localStorage.getItem("places")) } />
         </div>
       </div>
     );
@@ -68,6 +66,15 @@ class WeatherAppMap extends React.Component {
         (result) => {
           console.log('got weather data');
           console.log(result);
+          var places_raw = localStorage.getItem('places');
+          var places = {};
+          if(places_raw === null) {
+            places_raw = "";
+          } else {
+            places = JSON.parse(places_raw);
+          }
+          places[result.id] = result;
+          localStorage.setItem("places", JSON.stringify(places))
           this.setState({
             isLoaded: true,
             weatherData: result
@@ -100,12 +107,37 @@ class WeatherAppMap extends React.Component {
 }
 
 class WeatherAppHistory extends React.Component {
+  // constructor(props) {
+  //   super(props);
+  //   debugger
+  // }
+  render() {
+    const elems = Object.keys(this.props.places).map(key =>
+          <WeatherLocation key={key} loc={this.props.places[key]} />
+    )
+    return (
+      <div>
+        { elems }
+      </div>
+    )
+  };
+}
+
+class WeatherLocation extends React.Component {
+
+  toFahrenheit(num) {
+   return Math.round(num * (9/5) - 459.67);
+  }
   render() {
     return (
-      <div className="history-list">
-      History goes here
+      <div className="placeInfo">
+        <h3>{this.props.loc.name}</h3>
+        <span className="temp">{this.toFahrenheit(this.props.loc.main.temp)} degrees</span>
+        <span className="humidity">{this.props.loc.main.humidity}% humidity</span>
+
+        
       </div>
-    );
+    )
   }
 }
 
