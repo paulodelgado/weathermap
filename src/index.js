@@ -87,7 +87,7 @@ class WeatherAppMap extends React.Component {
     if(this.props.loc === null) {
       return "";
     }
-    return "http://api.openweathermap.org/data/2.5/weather?lat=" + this.props.loc.coords.latitude + "&lon=" + this.props.loc.coords.longitude + "&appid=" + this.api_key();
+    return "https://api.openweathermap.org/data/2.5/weather?lat=" + this.props.loc.coords.latitude + "&lon=" + this.props.loc.coords.longitude + "&appid=" + this.api_key();
   }
 
   render() {
